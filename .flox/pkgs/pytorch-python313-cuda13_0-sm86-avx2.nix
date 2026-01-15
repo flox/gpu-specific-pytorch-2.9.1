@@ -21,7 +21,7 @@ let
     "-mf16c"       # 16-bit float conversion
   ];
 
-in (python3Packages.pytorch.override {
+in (python3Packages.torch.override {
   cudaSupport = true;
   cudaPackages = cudaPackages_13;
   gpuTargets = [ gpuArchNum ];

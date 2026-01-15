@@ -18,7 +18,7 @@ let
   # Use OpenBLAS for CPU linear algebra
   blasBackend = openblas;
 
-in (python3Packages.pytorch.override {
+in (python3Packages.torch.override {
   cudaSupport = false;
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx2";

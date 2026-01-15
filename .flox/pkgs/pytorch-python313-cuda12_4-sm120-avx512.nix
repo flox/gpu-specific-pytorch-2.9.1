@@ -4,7 +4,7 @@
 { python3Packages
 , lib
 , config
-, cudaPackages_12_4 ? cudaPackages
+, cudaPackages_12_4
 , addDriverRunpath
 , openblas
 }:

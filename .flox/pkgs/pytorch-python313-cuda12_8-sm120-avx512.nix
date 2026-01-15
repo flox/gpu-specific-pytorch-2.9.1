@@ -1,10 +1,10 @@
 # PyTorch 2.9.1 optimized for NVIDIA Blackwell (RTX 5090) + AVX-512
-# Package name: pytorch-python313-cuda12_4-sm120-avx512
+# Package name: pytorch-python313-cuda12_8-sm120-avx512
 
 { python3Packages
 , lib
 , config
-, cudaPackages_12_4
+, cudaPackages
 , addDriverRunpath
 , openblas
 }:
@@ -25,21 +25,20 @@ let
 
 in (python3Packages.pytorch.override {
   cudaSupport = true;
-  cudaPackages = cudaPackages_12_4;
   gpuTargets = [ gpuArchNum ];
 }).overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-cuda12_4-sm120-avx512";
+  pname = "pytorch-python313-cuda12_8-sm120-avx512";
   version = "2.9.1";
 
   # Override build configuration
   buildInputs = oldAttrs.buildInputs ++ [
-    cudaPackages_12_4.cuda_cudart
-    cudaPackages_12_4.libcublas
-    cudaPackages_12_4.libcufft
-    cudaPackages_12_4.libcurand
-    cudaPackages_12_4.libcusolver
-    cudaPackages_12_4.libcusparse
-    cudaPackages_12_4.cudnn
+    cudaPackages.cuda_cudart
+    cudaPackages.libcublas
+    cudaPackages.libcufft
+    cudaPackages.libcurand
+    cudaPackages.libcusolver
+    cudaPackages.libcusparse
+    cudaPackages.cudnn
     # Explicitly add dynamic OpenBLAS for host-side operations
     (openblas.override {
       blas64 = false;
@@ -72,7 +71,7 @@ in (python3Packages.pytorch.override {
     echo "========================================="
     echo "GPU Target: ${gpuArchSM} (NVIDIA Blackwell - RTX 5090)"
     echo "CPU Features: AVX-512"
-    echo "CUDA: 12.4 with cuBLAS"
+    echo "CUDA: 12.8 with cuBLAS"
     echo "TORCH_CUDA_ARCH_LIST: $TORCH_CUDA_ARCH_LIST"
     echo "CXXFLAGS: $CXXFLAGS"
     echo "========================================="
@@ -84,7 +83,7 @@ in (python3Packages.pytorch.override {
       Custom PyTorch 2.9.1 build with targeted optimizations:
       - GPU: NVIDIA Blackwell (RTX 5090) - SM120
       - CPU: x86-64 with AVX-512 instruction set
-      - CUDA: 12.4
+      - CUDA: 12.8
       - BLAS: cuBLAS for GPU operations, OpenBLAS for host-side
       - Python: 3.13
     '';

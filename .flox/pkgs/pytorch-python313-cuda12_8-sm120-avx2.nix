@@ -1,5 +1,5 @@
-# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX-512
-# Package name: pytorch-python313-cuda12_8-sm120-avx512
+# PyTorch optimized for NVIDIA Blackwell (SM120: RTX 5090) + AVX2
+# Package name: pytorch-python313-cuda12_8-sm120-avx2
 
 { python3Packages
 , lib
@@ -13,13 +13,11 @@ let
   # PyTorch's CMake accepts numeric format (12.0) not sm_120
   gpuArchNum = "12.0";
 
-  # CPU optimization: AVX-512
+  # CPU optimization: AVX2 (broader compatibility)
   cpuFlags = [
-    "-mavx512f"    # AVX-512 Foundation
-    "-mavx512dq"   # Doubleword and Quadword instructions
-    "-mavx512vl"   # Vector Length extensions
-    "-mavx512bw"   # Byte and Word instructions
+    "-mavx2"       # AVX2 instructions
     "-mfma"        # Fused multiply-add
+    "-mf16c"       # Half-precision conversions
   ];
 
 in
@@ -30,7 +28,7 @@ in
     gpuTargets = [ gpuArchNum ];
   # 2. Customize build (CPU flags, metadata, etc.)
   }).overrideAttrs (oldAttrs: {
-    pname = "pytorch-python313-cuda12_8-sm120-avx512";
+    pname = "pytorch-python313-cuda12_8-sm120-avx2";
 
     # Set CPU optimization flags
     # GPU architecture is handled by nixpkgs via gpuTargets parameter
@@ -43,29 +41,29 @@ in
       echo "PyTorch Build Configuration"
       echo "========================================="
       echo "GPU Target: ${gpuArchNum} (Blackwell: RTX 5090)"
-      echo "CPU Features: AVX-512"
+      echo "CPU Features: AVX2 (broad compatibility)"
       echo "CUDA: Enabled (cudaSupport=true, gpuTargets=[${gpuArchNum}])"
       echo "CXXFLAGS: $CXXFLAGS"
       echo "========================================="
     '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) + AVX-512";
+    description = "PyTorch for NVIDIA RTX 5090 (SM120, Blackwell) with CUDA";
     longDescription = ''
       Custom PyTorch build with targeted optimizations:
       - GPU: NVIDIA Blackwell architecture (SM120) - RTX 5090
-      - CPU: x86-64 with AVX-512 instruction set
+      - CPU: x86-64 with AVX2 instruction set (broad compatibility)
       - CUDA: 12.8 with compute capability 12.0
       - BLAS: cuBLAS for GPU operations
       - Python: 3.13
 
       Hardware requirements:
       - GPU: RTX 5090, Blackwell architecture GPUs
-      - CPU: Intel Skylake-X+ (2017+), AMD Zen 4+ (2022+)
+      - CPU: Intel Haswell+ (2013+), AMD Zen 1+ (2017+)
       - Driver: NVIDIA 570+ required
 
-      Choose this if: You have RTX 5090 GPU + AVX-512 CPU for general
-      workloads.
+      Choose this if: You have RTX 5090 GPU and want maximum CPU compatibility
+      with AVX2.
     '';
     platforms = [ "x86_64-linux" ];
   };

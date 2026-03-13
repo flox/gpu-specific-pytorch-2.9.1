@@ -5,21 +5,12 @@
 # Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
 # Requires: macOS 12.3+
 
-{ pkgs ? import <nixpkgs> {} }:
+{ python3Packages
+, lib
+, fetchFromGitHub
+}:
 
-let
-  # Import nixpkgs at a specific revision (pinned for version consistency)
-  nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/fe5e41d7ffc0421f0913e8472ce6238ed0daf8e3.tar.gz";
-  }) {
-    config = {
-      allowUnfree = true;
-    };
-  };
-
-  fetchFromGitHub = nixpkgs_pinned.fetchFromGitHub;
-
-in (nixpkgs_pinned.python313Packages.torch.override {
+(python3Packages.pytorch.override {
   cudaSupport = false;
 }).overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-darwin-mps";
@@ -52,10 +43,10 @@ in (nixpkgs_pinned.python313Packages.torch.override {
   };
 
   # Filter out CUDA deps (base pytorch may include them)
-  buildInputs = nixpkgs_pinned.lib.filter (p: !(nixpkgs_pinned.lib.hasPrefix "cuda" (p.pname or "")))
+  buildInputs = lib.filter (p: !(lib.hasPrefix "cuda" (p.pname or "")))
     (oldAttrs.buildInputs or []);
 
-  nativeBuildInputs = nixpkgs_pinned.lib.filter (p: p.pname or "" != "addDriverRunpath")
+  nativeBuildInputs = lib.filter (p: p.pname or "" != "addDriverRunpath")
     (oldAttrs.nativeBuildInputs or []);
 
   preConfigure = (oldAttrs.preConfigure or "") + ''

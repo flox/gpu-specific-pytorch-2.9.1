@@ -1,5 +1,5 @@
-# PyTorch 2.9.1 with MPS (Metal Performance Shaders) for Apple Silicon
-# Package name: pytorch-python313-darwin-mps
+# PyTorch with MPS (Metal Performance Shaders) for Apple Silicon
+# Package name: pytorch-python311-darwin-mps
 #
 # macOS build for Apple Silicon (M1/M2/M3/M4) with Metal GPU acceleration
 # Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
@@ -10,15 +10,15 @@
 let
   # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/46336d4d6980ae6f136b45c8507b17787eb186a0.tar.gz";
   }) {
     config = {
       allowUnfree = true;
     };
   };
 
-in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-darwin-mps";
+in nixpkgs_pinned.python311Packages.torch.overrideAttrs (oldAttrs: {
+  pname = "pytorch-python311-darwin-mps";
 
   # Limit build parallelism to prevent memory saturation
   ninjaFlags = [ "-j32" ];
@@ -52,24 +52,24 @@ in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
     export MAX_JOBS=32
 
     echo "========================================="
-    echo "PyTorch 2.9.1 Build Configuration"
+    echo "PyTorch Build Configuration"
     echo "========================================="
     echo "GPU Target: MPS (Metal Performance Shaders)"
     echo "Platform: Apple Silicon (aarch64-darwin)"
     echo "BLAS Backend: vecLib (Apple Accelerate)"
-    echo "Python: 3.13"
     echo "========================================="
   '';
 
   meta = oldAttrs.meta // {
-    description = "PyTorch 2.9.1 with MPS GPU acceleration for Apple Silicon";
+    description = "PyTorch with MPS GPU acceleration for Apple Silicon";
     longDescription = ''
-      Custom PyTorch 2.9.1 build with targeted optimizations:
+      Custom PyTorch build with targeted optimizations:
       - GPU: Metal Performance Shaders (MPS) for Apple Silicon
       - Platform: macOS 12.3+ on M1/M2/M3/M4
       - BLAS: vecLib (Apple Accelerate framework)
-      - Python: 3.13
+      - Python: 3.11
     '';
     platforms = [ "aarch64-darwin" ];
   };
 })
+

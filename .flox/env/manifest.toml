@@ -1,5 +1,5 @@
 # PyTorch 2.9.1 Custom Build Environment
-# Build targeted PyTorch variants with CUDA 13.0 and architecture-specific optimizations
+# Build targeted PyTorch variants with CUDA 12.9 and architecture-specific optimizations
 
 version = 1
 
@@ -41,26 +41,31 @@ NIXPKGS_ALLOW_UNFREE = "1"  # Required for CUDA packages
 [hook]
 on-activate = '''
 echo "========================================="
-echo "PyTorch 2.9.1 Build Environment (CUDA 13.0)"
+echo "PyTorch 2.9.1 Build Environment (CUDA 12.9)"
 echo "========================================="
 echo ""
 echo "Available build commands:"
-echo "  flox build --stability=unstable <variant>  # Build a specific variant"
+echo "  flox build <variant>"
 echo ""
-echo "GPU variants (CUDA 13.0):"
-echo "  pytorch-python313-cuda13_0-sm120-avx512   # RTX 5090"
-echo "  pytorch-python313-cuda13_0-sm90-avx512    # H100/L40S"
-echo "  pytorch-python313-cuda13_0-sm86-avx2      # RTX 3090/A40"
-echo "  pytorch-python313-cuda13_0-sm80-avx2      # A100/A30"
+echo "GPU variants (CUDA 12.9, custom per-SM MAGMA):"
+echo "  pytorch-python313-cuda12_9-sm120-avx2     # Vera Rubin (R100)"
+echo "  pytorch-python313-cuda12_9-sm100-avx2     # Blackwell (B200)"
+echo "  pytorch-python313-cuda12_9-sm90-avx2      # Hopper (H100, L40S)"
+echo "  pytorch-python313-cuda12_9-sm89-avx2      # Ada (RTX 4090, L40)"
+echo "  pytorch-python313-cuda12_9-sm86-avx2      # Ampere (RTX 3090, A40)"
+echo "  pytorch-python313-cuda12_9-sm80-avx2      # Ampere (A100, A30)"
+echo "  pytorch-python313-cuda12_9-sm75-avx2      # Turing (T4, RTX 2080 Ti)"
+echo "  pytorch-python313-cuda12_9-sm61-avx2      # Pascal (P40, GTX 1080 Ti)"
+echo "  (avx512 variants also available for SM75-SM120)"
 echo ""
 echo "CPU-only variants:"
-echo "  pytorch-python313-cpu-avx2                # Broad compatibility"
-echo "  pytorch-python313-cpu-avx512              # Modern CPUs"
+echo "  pytorch-python313-cpu-avx2                # x86-64 broad compat"
+echo "  pytorch-python313-cpu-avx512              # x86-64 modern CPUs"
+echo "  pytorch-python313-cpu-armv8_2             # ARM Graviton2"
+echo "  pytorch-python313-cpu-armv9               # ARM Grace/Graviton3+"
 echo ""
 echo "macOS variants:"
-echo "  pytorch-python313-darwin-mps              # Apple Silicon (M1/M2/M3/M4)"
-echo ""
-echo "Note: CUDA 13.0 requires --stability=unstable flag"
+echo "  pytorch-python313-darwin-mps              # Apple Silicon (M1-M4)"
 echo "========================================="
 '''
 
@@ -70,13 +75,7 @@ common = '''
 build_variant() {
     local variant="$1"
     echo "Building PyTorch 2.9.1 variant: $variant"
-
-    if [[ "$variant" == *"cuda13"* ]]; then
-        echo "Note: Using --stability=unstable for CUDA 13.0 support"
-        flox build --stability=unstable "$variant"
-    else
-        flox build "$variant"
-    fi
+    flox build "$variant"
 }
 
 test_variant() {

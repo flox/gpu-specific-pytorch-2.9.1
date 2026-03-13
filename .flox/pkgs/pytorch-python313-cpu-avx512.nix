@@ -6,7 +6,7 @@
 let
   # Import nixpkgs at a specific revision (pinned for version consistency)
   nixpkgs_pinned = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/46336d4d6980ae6f136b45c8507b17787eb186a0.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/ed142ab1b3a092c4d149245d0c4126a5d7ea00b0.tar.gz";
   }) {
     config = {
       allowUnfree = true;
@@ -25,7 +25,7 @@ let
   # Note: Official PyTorch binaries bundle MKL, but OpenBLAS is open-source
   blasBackend = nixpkgs_pinned.openblas;
 
-in nixpkgs_pinned.python313Packages.torch.overrideAttrs (oldAttrs: {
+in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
   pname = "pytorch-python313-cpu-avx512";
 
     # Limit build parallelism to prevent memory saturation

@@ -5,32 +5,20 @@
 # Hardware: Apple M1, M2, M3, M4 and variants (Pro, Max, Ultra)
 # Requires: macOS 12.3+
 
-{ python3Packages
-, lib
-, fetchFromGitHub
-}:
+{ pkgs ? import <nixpkgs> {} }:
 
-(python3Packages.pytorch.override {
-  cudaSupport = false;
-}).overrideAttrs (oldAttrs: {
-  pname = "pytorch-python313-darwin-mps";
-  version = "2.9.1";
-
-  src = fetchFromGitHub {
-    owner = "pytorch";
-    repo = "pytorch";
-    rev = "v2.9.1";
-    hash = "sha256-MYzzceoQh01jzQU9tyAl47PU4M+QbuKwHXQAE8yt1Hg=";
-    fetchSubmodules = true;
+let
+  # Import nixpkgs at a specific revision (pinned for version consistency)
+  nixpkgs_pinned = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/6a030d535719c5190187c4cec156f335e95e3211.tar.gz";
+  }) {
+    config = {
+      allowUnfree = true;
+    };
   };
 
-  # Override patches - PyTorch 2.9.1 doesn't need 2.8.0 patches
-  patches = [];
-
-  # Override postPatch - skip the setuptools replacement that doesn't apply to 2.9.1
-  postPatch = ''
-    # Add necessary postPatch commands for PyTorch 2.9.1 if needed
-  '';
+in nixpkgs_pinned.python3Packages.torch.overrideAttrs (oldAttrs: {
+  pname = "pytorch-python313-darwin-mps";
 
   # Limit build parallelism to prevent memory saturation
   ninjaFlags = [ "-j32" ];
@@ -43,10 +31,10 @@
   };
 
   # Filter out CUDA deps (base pytorch may include them)
-  buildInputs = lib.filter (p: !(lib.hasPrefix "cuda" (p.pname or "")))
+  buildInputs = nixpkgs_pinned.lib.filter (p: !(nixpkgs_pinned.lib.hasPrefix "cuda" (p.pname or "")))
     (oldAttrs.buildInputs or []);
 
-  nativeBuildInputs = lib.filter (p: p.pname or "" != "addDriverRunpath")
+  nativeBuildInputs = nixpkgs_pinned.lib.filter (p: p.pname or "" != "addDriverRunpath")
     (oldAttrs.nativeBuildInputs or []);
 
   preConfigure = (oldAttrs.preConfigure or "") + ''

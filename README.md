@@ -1,6 +1,6 @@
 # PyTorch 2.9.1 Custom Build Environment
 
-This Flox environment builds custom PyTorch 2.9.1 variants with **CUDA 12.8** support and targeted optimizations for specific GPU architectures and CPU instruction sets.
+This Flox environment builds custom PyTorch 2.9.1 variants with **CUDA 12.8** support and targeted optimizations for specific GPU architectures and CPU instruction sets. It is an example environment created to complement [this guide](https://flox.dev/blog/gpu-optimized-pytorch-builds-made-easy-with-flox-and-nix/).
 
 ## Key Differences from PyTorch 2.8.0 Builds
 
